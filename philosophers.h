@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcos <marcos@student.42.fr>              +#+  +:+       +#+        */
+/*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:04:45 by marcos            #+#    #+#             */
-/*   Updated: 2025/07/13 18:23:02 by marcos           ###   ########.fr       */
+/*   Updated: 2025/08/18 11:20:20 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <sys/time.h>
 
 typedef struct philosophers_information
 {
@@ -25,19 +26,32 @@ typedef struct philosophers_information
 	int				time_to_sleep;
 	int				required_eat;
 	pthread_mutex_t	*forks;
-}	t_philosophers_info;
+	pthread_mutex_t *state_mutex;
+	int				state;
+}	t_philo_info;
 
 typedef struct philosopher
 {
-	t_philosophers_info	*info;
+	t_philo_info		*info;
 	pthread_t			*thread;
 	int					id;
+	long				last_eat;
+	int					eat;
+	pthread_mutex_t		*last_eat_mutex;
 }	t_philosopher;
 
+int					parse_input(int *arguments, int argc, char **argv);
 int					parse_to_number(char *argument);
-t_philosophers_info	*configurate_philo(int argc, char *argv[]);
-t_philosopher		*create_philosopher(int counter, t_philosophers_info *info);
-void				free_info(t_philosophers_info *config);
+t_philo_info		*configurate_philo(int argc, int *arguments);
+t_philosopher		*create_philosopher(int counter, t_philo_info *info);
+void				create_all_philosophers(t_philo_info *info,
+						t_philosopher **philosophers);
+int				end_threads(t_philo_info *info,
+						t_philosopher **philosophers);
+void				free_info(t_philo_info *config);
 void				free_philosopher(t_philosopher *philo);
 void				free_philosophers(int size, t_philosopher **philosophers);
+void				round_table(t_philosopher *philo);
+void				show_event(long actual_time, int philo_id, char *message);
+long				get_time_in_ms(void);
 #endif

@@ -1,40 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_memory.c                                      :+:      :+:    :+:   */
+/*   philo_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/11 16:28:57 by marcos            #+#    #+#             */
-/*   Updated: 2025/08/04 20:13:23 by matoledo         ###   ########.fr       */
+/*   Created: 2025/08/04 20:17:36 by matoledo          #+#    #+#             */
+/*   Updated: 2025/08/15 12:56:44 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void	free_info(t_philo_info *info)
+//get time of the day in millisecons
+long	get_time_in_ms(void)
 {
-	if (info->forks)
-		free(info->forks);
-	free(info);
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void	free_philosopher(t_philosopher *philo)
+//function to show the event with the time
+void	show_event(long actual_time, int philo_id, char *message)
 {
-	if (philo->thread)
-		free(philo->thread);
-	free(philo);
+	static long		start_time;
+
+	if (!start_time)
+		start_time = get_time_in_ms();
+	printf("%ld ms %d %s\n", actual_time - start_time, philo_id, message);
 }
 
-void	free_philosophers(int size, t_philosopher **philosophers)
-{
-	int	counter;
-
-	counter = 0;
-	while (counter < size)
-	{
-		free_philosopher(philosophers[counter]);
-		counter++;
-	}
-	free(philosophers);
-}

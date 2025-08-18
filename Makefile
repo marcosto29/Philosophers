@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: marcos <marcos@student.42.fr>              +#+  +:+       +#+         #
+#    By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/08 11:55:33 by marcos            #+#    #+#              #
-#    Updated: 2025/07/11 17:23:49 by marcos           ###   ########.fr        #
+#    Updated: 2025/08/04 20:26:14 by matoledo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ SRCS = main.c \
 		input_parse.c \
 		philo_create.c \
 		free_memory.c \
+		philo_utils.c \
 
 NAME = philo
 
