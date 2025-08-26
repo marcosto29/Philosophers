@@ -6,38 +6,36 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 14:01:43 by marcos            #+#    #+#             */
-/*   Updated: 2025/08/18 12:33:36 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:26:54 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-t_philo_info	*configurate_philo(int argc, int *arguments)
+t_table	*create_table(int *config, t_philosopher **philosophers)
 {
-	t_philo_info	*info;
+	t_table	*table;
+	int		counter;
 
-	info = malloc(sizeof(t_philo_info));
-	if (!info)
-		return (NULL);
-	info->philo_num = arguments[0];
-	info->time_to_die = arguments[1];
-	info->time_to_eat = arguments[2];
-	info->time_to_sleep = arguments[3];
-	if (argc == 6)
-		info->required_eat = arguments[4];
-	info->forks = malloc(sizeof(pthread_mutex_t) * info->philo_num);
-	if (!info->forks)
+	counter = 0;
+	table = malloc(sizeof(t_table));
+	table->forks = malloc(sizeof(pthread_mutex_t *) * config[0]);
+	table->forks_state = malloc(sizeof(int) * config[0]);
+	table->state_mutex = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(table->state_mutex, NULL);
+	table->state = 0;
+	while (counter < config[0])
 	{
-		free_info(info);
-		return (NULL);
+		table->forks[counter] = malloc(sizeof(pthread_mutex_t));
+		pthread_mutex_init(table->forks[counter], NULL);
+		table->forks_state[counter] = 0;
+		counter++;
 	}
-	info->state = 0;
-	info->state_mutex = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(info->state_mutex, NULL);
-	return (info);
+	table->philos = philosophers;
+	return (table);
 }
 
-t_philosopher	*create_philosopher(int counter, t_philo_info *info)
+t_philosopher	*create_philosopher(int counter, int *config)
 {
 	t_philosopher	*philosopher;
 
@@ -51,58 +49,81 @@ t_philosopher	*create_philosopher(int counter, t_philo_info *info)
 		free_philosopher(philosopher);
 		return (NULL);
 	}
-	if (info->required_eat)
-		philosopher->eat = info->required_eat;
+	philosopher->eat_mutex = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(philosopher->eat_mutex, NULL);
+	if (ft_size(config) == 5)
+		philosopher->own_required_eat = config[4];
 	else
-		philosopher->eat = -1;
+		philosopher->own_required_eat = -1;
 	philosopher->last_eat_mutex = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(philosopher->last_eat_mutex, NULL);
-	philosopher->info = info;
 	return (philosopher);
 }
 
-void	create_all_philosophers(t_philo_info *info,
+void	create_all_philosophers(int *config,
 	t_philosopher **philosophers)
 {
 	int	counter;
 
 	counter = 0;
-	while (counter < info->philo_num)
+	while (counter < config[0])
 	{
-		philosophers[counter] = create_philosopher(counter, info);
+		philosophers[counter] = create_philosopher(counter, config);
 		if (!philosophers[counter])
 		{
-			free_philosophers(counter, philosophers);
+			free_philosophers(philosophers, counter);
 			exit(1);
 		}
-		pthread_create(philosophers[counter]->thread, NULL,
-			(void *)round_table, philosophers[counter]);
-		pthread_mutex_init(&info->forks[counter], NULL);
 		counter++;
 	}
 }
 
-int	end_threads(t_philo_info *info,
-	t_philosopher **philosophers)
+int	end_philosophers(int *config,
+	t_philosopher **philosophers, t_table *table,
+	t_context **phi_tab_con)
 {
 	int		counter;
+	int		size;
+	int		state;
 
+	state = table->state;
+	size = config[0];
 	counter = 0;
-	while (1)
-	{
-		pthread_mutex_lock(info->state_mutex);
-		if (info->state == -1 || info->state == info->philo_num)
-			break ;
-		pthread_mutex_unlock(info->state_mutex);
-	}
-	while (counter < info->philo_num)
+	while (counter < size)
 	{
 		pthread_join(*(philosophers[counter]->thread), NULL);
-		pthread_mutex_destroy(&info->forks[counter]);
+		pthread_mutex_destroy(table->forks[counter]);
+		pthread_mutex_destroy(table->state_mutex);
 		pthread_mutex_destroy(philosophers[counter]->last_eat_mutex);
 		counter++;
 	}
-	if (info->state == -1)
+	free_philosophers(philosophers, size);
+	free_table(table, size);
+	free(config);
+	free_phi_tab_con(phi_tab_con, size);
+	if (state == -1)
 		return (1);
 	return (0);
+}
+
+int	start_table(int *config, t_philosopher **philosophers)
+{
+	t_table		*table;
+	t_context	**ctx;
+	int			counter;
+
+	ctx = malloc(sizeof(t_context *) * config[0]);
+	counter = 0;
+	table = create_table(config, philosophers);
+	while (counter < config[0])
+	{
+		ctx[counter] = malloc(sizeof(t_context));
+		ctx[counter]->philo = philosophers[counter];
+		ctx[counter]->table = table;
+		ctx[counter]->config = config;
+		pthread_create(philosophers[counter]->thread, NULL,
+			(void *)round_table, ctx[counter]);
+		counter++;
+	}
+	return (end_philosophers(config, philosophers, table, ctx));
 }
