@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 16:28:57 by marcos            #+#    #+#             */
-/*   Updated: 2025/08/26 18:24:58 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/08/27 12:51:20 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,18 +32,17 @@ void	free_table(t_table *table, int size)
 	counter = 0;
 	while (counter < size)
 	{
-		free(table->forks[counter]);
+		pthread_mutex_destroy(&table->forks[counter]);
 		counter++;
 	}
+	free(table->forks);
 	free(table->forks_state);
-	free(table->state_mutex);
+	pthread_mutex_destroy(&table->state_mutex);
 	free(table);
 }
 
 void	free_philosopher(t_philosopher *philo)
 {
-	free(philo->last_eat_mutex);
-	free(philo->eat_mutex);
 	free(philo->thread);
 	free(philo);
 }
@@ -55,6 +54,7 @@ void	free_philosophers(t_philosopher **philosophers, int size)
 	counter = 0;
 	while (counter < size)
 	{
+		pthread_mutex_destroy(&philosophers[counter]->last_eat_mutex);
 		free_philosopher(philosophers[counter]);
 		counter++;
 	}

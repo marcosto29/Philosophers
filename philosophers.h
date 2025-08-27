@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:04:45 by marcos            #+#    #+#             */
-/*   Updated: 2025/08/26 18:24:58 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/08/27 14:27:56 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,16 @@ typedef struct philosopher
 {
 	int					id;
 	pthread_t			*thread;
-	pthread_mutex_t		*last_eat_mutex;
+	pthread_mutex_t		last_eat_mutex;
 	long				last_eat;
-	pthread_mutex_t		*eat_mutex;
 	int					own_required_eat;
 }	t_philosopher;
 
 typedef struct table
 {
-	pthread_mutex_t	**forks;
+	pthread_mutex_t	*forks;
 	int				*forks_state;
-	pthread_mutex_t	*state_mutex;
+	pthread_mutex_t	state_mutex;
 	int				state;
 	t_philosopher	**philos;
 }	t_table;

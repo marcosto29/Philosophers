@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 12:41:25 by matoledo          #+#    #+#             */
-/*   Updated: 2025/08/26 18:26:28 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/08/27 14:15:00 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ int	philo_eat(t_table *table, t_philosopher *philo, int time_to_eat)
 {
 	long	wait_time;
 
+	pthread_mutex_lock(&philo->last_eat_mutex);
+	philo->last_eat = get_time_in_ms();
+	pthread_mutex_unlock(&philo->last_eat_mutex);
 	wait_time = get_time_in_ms() + time_to_eat;
 	if (check_death(table, philo->id, "is eating") == 1)
 		return (1);
@@ -34,16 +37,8 @@ int	philo_eat(t_table *table, t_philosopher *philo, int time_to_eat)
 			return (1);
 		usleep(100);
 	}
-	pthread_mutex_lock(philo->last_eat_mutex);
-	philo->last_eat = get_time_in_ms();
-	pthread_mutex_unlock(philo->last_eat_mutex);
-	pthread_mutex_lock(philo->eat_mutex);
 	if (--philo->own_required_eat == 0)
-	{
-		pthread_mutex_unlock(philo->eat_mutex);
 		return (1);
-	}
-	pthread_mutex_unlock(philo->eat_mutex);
 	return (0);
 }
 
@@ -66,13 +61,13 @@ int	philo_sleep(t_table *table, int id, int time_to_sleep)
 
 void	philo_die(t_table *table, int id)
 {
-	pthread_mutex_lock(table->state_mutex);
+	pthread_mutex_lock(&table->state_mutex);
 	if (table->state == -1)
 	{
-		pthread_mutex_unlock(table->state_mutex);
+		pthread_mutex_unlock(&table->state_mutex);
 		return ;
 	}
 	table->state = -1;
 	show_event(get_time_in_ms(), id, "died");
-	pthread_mutex_unlock(table->state_mutex);
+	pthread_mutex_unlock(&table->state_mutex);
 }

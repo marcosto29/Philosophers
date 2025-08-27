@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 14:01:43 by marcos            #+#    #+#             */
-/*   Updated: 2025/08/26 18:26:54 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/08/27 15:57:36 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,13 @@ t_table	*create_table(int *config, t_philosopher **philosophers)
 
 	counter = 0;
 	table = malloc(sizeof(t_table));
-	table->forks = malloc(sizeof(pthread_mutex_t *) * config[0]);
+	table->forks = malloc(sizeof(pthread_mutex_t) * config[0]);
 	table->forks_state = malloc(sizeof(int) * config[0]);
-	table->state_mutex = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(table->state_mutex, NULL);
+	pthread_mutex_init(&table->state_mutex, NULL);
 	table->state = 0;
 	while (counter < config[0])
 	{
-		table->forks[counter] = malloc(sizeof(pthread_mutex_t));
-		pthread_mutex_init(table->forks[counter], NULL);
+		pthread_mutex_init(&table->forks[counter], NULL);
 		table->forks_state[counter] = 0;
 		counter++;
 	}
@@ -49,14 +47,11 @@ t_philosopher	*create_philosopher(int counter, int *config)
 		free_philosopher(philosopher);
 		return (NULL);
 	}
-	philosopher->eat_mutex = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(philosopher->eat_mutex, NULL);
 	if (ft_size(config) == 5)
 		philosopher->own_required_eat = config[4];
 	else
 		philosopher->own_required_eat = -1;
-	philosopher->last_eat_mutex = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(philosopher->last_eat_mutex, NULL);
+	pthread_mutex_init(&philosopher->last_eat_mutex, NULL);
 	return (philosopher);
 }
 
@@ -86,20 +81,17 @@ int	end_philosophers(int *config,
 	int		size;
 	int		state;
 
-	state = table->state;
 	size = config[0];
 	counter = 0;
 	while (counter < size)
 	{
 		pthread_join(*(philosophers[counter]->thread), NULL);
-		pthread_mutex_destroy(table->forks[counter]);
-		pthread_mutex_destroy(table->state_mutex);
-		pthread_mutex_destroy(philosophers[counter]->last_eat_mutex);
 		counter++;
 	}
+	state = table->state;
+	free(config);
 	free_philosophers(philosophers, size);
 	free_table(table, size);
-	free(config);
 	free_phi_tab_con(phi_tab_con, size);
 	if (state == -1)
 		return (1);
@@ -125,5 +117,7 @@ int	start_table(int *config, t_philosopher **philosophers)
 			(void *)round_table, ctx[counter]);
 		counter++;
 	}
+	//after creating every philosopher create a thread who checks evry philo last time eat
+	//just one thread to check them vs every philo check for himself
 	return (end_philosophers(config, philosophers, table, ctx));
 }

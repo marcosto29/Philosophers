@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 20:17:36 by matoledo          #+#    #+#             */
-/*   Updated: 2025/08/25 13:58:28 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/08/27 14:27:46 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,17 +46,17 @@ void	show_event(long actual_time, int philo_id, char *message)
 }
 
 //function to check wether a philos has died
-//it also prints the function, this is to make a good action lock
+//it also prints an action if necessary, to make a good print lock
 int	check_death(t_table *table, int id, char *msg)
 {
-	pthread_mutex_lock(table->state_mutex);
+	pthread_mutex_lock(&table->state_mutex);
 	if (table->state == -1)
 	{
-		pthread_mutex_unlock(table->state_mutex);
+		pthread_mutex_unlock(&table->state_mutex);
 		return (1);
 	}
+	pthread_mutex_unlock(&table->state_mutex);
 	if (msg != NULL)
 		show_event(get_time_in_ms(), id, msg);
-	pthread_mutex_unlock(table->state_mutex);
 	return (0);
 }
