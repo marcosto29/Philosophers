@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:02:41 by marcos            #+#    #+#             */
-/*   Updated: 2025/08/27 15:59:01 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/01 22:02:35 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,122 +20,87 @@ void	drop_fork(t_table *table, int id)
 	pthread_mutex_unlock(&table->forks[id]);
 }
 
-void	drop_forks(t_table *table, int id, int philos)
-{
-	drop_fork(table, id);
-	drop_fork(table, (id + 1) % philos);
-}
-
 //take the fork
-int	take_fork(t_table *table, int id)
+int	take_fork(t_table *table, int id, int philo_id)
 {
+	if (check_death(table, philo_id, NULL) == 1)
+		return (2);
 	pthread_mutex_lock(&table->forks[id]);
 	if (table->forks_state[id] == 0)
 	{
 		table->forks_state[id] = 1;
 		pthread_mutex_unlock(&table->forks[id]);
+		if (check_death(table, philo_id, "has taken the fork") == 1)
+			return (2);
 		return (0);
 	}
 	pthread_mutex_unlock(&table->forks[id]);
 	return (1);
 }
 
-//check to see if the left and right philos needs to eat before
-int	check_side_philo(t_table *table, t_philosopher *philo, int id)
+//take both forks
+int	take_forks(t_table *table, int id, int first, int second)
 {
-	pthread_mutex_lock(&table->philos[id]->last_eat_mutex);
-	if (table->philos[id]->last_eat < philo->last_eat)
+	int	fork_return;
+
+	while (1)
 	{
-		pthread_mutex_unlock(&table->philos[id]->last_eat_mutex);
-		return (1);
+		fork_return = take_fork(table, first, id);
+		if (fork_return == 0)
+			break ;
+		if (fork_return == 2)
+			return (1);
+		usleep(100);
 	}
-	pthread_mutex_unlock(&table->philos[id]->last_eat_mutex);
+	while (1)
+	{
+		fork_return = take_fork(table, second, id);
+		if (fork_return == 0)
+			break ;
+		if (fork_return == 2)
+			return (1);
+		usleep(100);
+	}
 	return (0);
 }
 
-//take the forks after checking if any philo needs to eat before
-int	take_forks(t_table *table, t_philosopher *philo, int philos)
+//layer to filter odds and even and have a rule to make deadlocks rarer
+//check if the philo ate with the fork already
+int	assign_forks(t_table *table, int id, int philos)
 {
-	while (1)
-	{
-		if (check_death(table, philo->id, NULL) == 1)
-			return (1);
-		if (check_side_philo(table, philo, (philo->id + 1) % philos) == 0
-			&& check_side_philo(table, philo,
-				(philo->id + philos - 1) % philos) == 0)
-			break ;
-		usleep(100);
-	}
-	while (1)
-	{
-		if (check_death(table, philo->id, NULL) == 1)
-			return (1);
-		if (take_fork(table, philo->id) == 0)
-		{
-			if (take_fork(table, (philo->id + 1) % philos) == 0)
-			{
-				if (check_death(table, philo->id, "has taken a fork") == 1)
-					return (1);
-				return (0);
-			}
-			drop_fork(table, philo->id);
-		}
-		usleep(100);
-	}
-}
-
-//detached thread to check starve levels
-void	starve_timer(t_context *ctx)
-{
-	while (1)
-	{
-		pthread_mutex_lock(&ctx->philo->last_eat_mutex);
-		if (get_time_in_ms() >= ctx->philo->last_eat + ctx->config[1])
-		{
-			pthread_mutex_unlock(&ctx->philo->last_eat_mutex);
-			break ;
-		}
-		pthread_mutex_unlock(&ctx->philo->last_eat_mutex);
-	}
-	if (ctx->philo->own_required_eat == 0)
-		return ;
-	philo_die(ctx->table, ctx->philo->id);
+	if (id % 2 == 0)
+		return (take_forks(table, id, id, (id + 1) % philos));
+	else
+		return (take_forks(table, id, (id + 1) % philos, id));
 }
 
 //main fnuction, iterative philo actions and detach the starving thread
-void	round_table(t_context *ctx)
+void	round_table(t_philo_context *ctx)
 {
-	pthread_t		death_check;
-
-	if (ctx->philo->id % 2 != 0)
-		usleep(500);
-	//maybe change this to create only one thread after creating all philo threads
-	//this only thread will check on the last time philos ate and determined if they are dead
-	//this approach will only need one thread instead of needing one per philo
-	//but this only thread will check EVERY philo
-	ctx->philo->last_eat = get_time_in_ms();
-	pthread_create(&death_check, NULL, (void *)starve_timer, ctx);
-	pthread_detach(death_check);
 	while (1)
 	{
 		if (philo_think(ctx->table, ctx->philo->id) == 1)
 			break ;
-		if (take_forks(ctx->table, ctx->philo, ctx->config[0]) == 1)
-			break;
+		if (assign_forks(ctx->table, ctx->philo->id, ctx->config[0]) == 1)
+			break ;
 		if (philo_eat(ctx->table, ctx->philo, ctx->config[2]) == 1)
 		{
-			drop_forks(ctx->table, ctx->philo->id, ctx->config[0]);
+			drop_fork(ctx->table, ctx->philo->id);
+			drop_fork(ctx->table, (ctx->philo->id + 1) % ctx->config[0]);
 			break ;
 		}
-		drop_forks(ctx->table, ctx->philo->id, ctx->config[0]);
+		drop_fork(ctx->table, ctx->philo->id);
+		drop_fork(ctx->table, (ctx->philo->id + 1) % ctx->config[0]);
 		if (philo_sleep(ctx->table, ctx->philo->id, ctx->config[3]) == 1)
 			break ;
+		usleep(100);
 	}
 }
 
 int	main(int argc, char *argv[])
 {
 	t_philosopher	**philosophers;
+	t_table			*table;
 	int				*config;
 	int				status;
 
@@ -145,7 +110,8 @@ int	main(int argc, char *argv[])
 	philosophers = malloc(sizeof(t_philosopher *) * config[0]);
 	if (!philosophers)
 		exit(1);
-	create_all_philosophers(config, philosophers);
-	status = start_table(config, philosophers);
+	initialize_philosophers(config, philosophers);
+	table = create_table(config, philosophers);
+	status = start_simulation(config, philosophers, table);
 	return (status);
 }

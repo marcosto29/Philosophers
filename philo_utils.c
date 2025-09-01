@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 20:17:36 by matoledo          #+#    #+#             */
-/*   Updated: 2025/08/27 14:27:46 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/01 20:19:01 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,17 +46,50 @@ void	show_event(long actual_time, int philo_id, char *message)
 }
 
 //function to check wether a philos has died
-//it also prints an action if necessary, to make a good print lock
+//it also prints an action if necessary
+//death_flag_mutex used also to print correctly
 int	check_death(t_table *table, int id, char *msg)
 {
-	pthread_mutex_lock(&table->state_mutex);
-	if (table->state == -1)
+	pthread_mutex_lock(&table->deat_flag_mutex);
+	if (table->death_flag == 1)
 	{
-		pthread_mutex_unlock(&table->state_mutex);
+		pthread_mutex_unlock(&table->deat_flag_mutex);
 		return (1);
 	}
-	pthread_mutex_unlock(&table->state_mutex);
 	if (msg != NULL)
 		show_event(get_time_in_ms(), id, msg);
+	pthread_mutex_unlock(&table->deat_flag_mutex);
 	return (0);
+}
+
+//thread to check when a philo dies or when everynoe finished their food
+void	monitor_check(t_monitor_context *ctx)
+{
+	int	counter;
+
+	while (1)
+	{
+		counter = 0;
+		while (counter < ctx->config[0])
+		{
+			pthread_mutex_lock(&ctx->table->philos[counter]->eat_mutex);
+			if (get_time_in_ms() >= ctx->table->philos[counter]->eat
+				+ ctx->config[1])
+			{
+				pthread_mutex_unlock(&ctx->table->philos[counter]->eat_mutex);
+				pthread_mutex_lock(&ctx->table->finished_mutex);
+				if (ctx->table->finished == ctx->config[0]
+					|| ctx->table->philos[counter]->own_required_eat == 0)
+				{
+					pthread_mutex_unlock(&ctx->table->finished_mutex);
+					return ;
+				}
+				philo_die(ctx->table, counter);
+				pthread_mutex_unlock(&ctx->table->finished_mutex);
+				return ;
+			}
+			pthread_mutex_unlock(&ctx->table->philos[counter]->eat_mutex);
+			counter++;
+		}
+	}
 }
