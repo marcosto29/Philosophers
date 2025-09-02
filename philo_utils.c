@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 20:17:36 by matoledo          #+#    #+#             */
-/*   Updated: 2025/09/01 20:19:01 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/02 18:53:50 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,5 +91,6 @@ void	monitor_check(t_monitor_context *ctx)
 			pthread_mutex_unlock(&ctx->table->philos[counter]->eat_mutex);
 			counter++;
 		}
+		usleep(1000);
 	}
 }

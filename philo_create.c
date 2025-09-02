@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 14:01:43 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/01 22:02:32 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/02 20:18:30 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ t_table	*create_table(int *config, t_philosopher **philosophers)
 	table = malloc(sizeof(t_table));
 	table->forks = malloc(sizeof(pthread_mutex_t) * config[0]);
 	table->forks_state = malloc(sizeof(int) * config[0]);
+	table->last_ate = malloc(sizeof(int) * config[0]);
 	pthread_mutex_init(&table->deat_flag_mutex, NULL);
 	table->death_flag = 0;
 	pthread_mutex_init(&table->finished_mutex, NULL);
@@ -29,6 +30,7 @@ t_table	*create_table(int *config, t_philosopher **philosophers)
 	{
 		pthread_mutex_init(&table->forks[counter], NULL);
 		table->forks_state[counter] = 0;
+		table->last_ate[counter] = -1;
 		counter++;
 	}
 	table->philos = philosophers;

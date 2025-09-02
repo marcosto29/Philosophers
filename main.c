@@ -6,18 +6,32 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:02:41 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/01 22:02:35 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/02 21:04:31 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
 //drop the fork
-void	drop_fork(t_table *table, int id)
+void	drop_fork(t_table *table, int id, int philo_id)
 {
 	pthread_mutex_lock(&table->forks[id]);
 	table->forks_state[id] = 0;
+	table->last_ate[id] = philo_id;
 	pthread_mutex_unlock(&table->forks[id]);
+}
+
+void	drop_side_fork(t_table *table, int id, int philos)
+{
+	if (philos % 2 != 0)
+		drop_fork(table, (id + 1) % philos, id);
+	else
+	{
+		if (id % 2 == 0)
+			drop_fork(table, (id + 1) % philos, id);
+		else
+			drop_fork(table, (id - 1 + philos) % philos, id);
+	}
 }
 
 //take the fork
@@ -26,6 +40,11 @@ int	take_fork(t_table *table, int id, int philo_id)
 	if (check_death(table, philo_id, NULL) == 1)
 		return (2);
 	pthread_mutex_lock(&table->forks[id]);
+	if (table->last_ate[id] == philo_id)
+	{
+		pthread_mutex_unlock(&table->forks[id]);
+		return (1);
+	}
 	if (table->forks_state[id] == 0)
 	{
 		table->forks_state[id] = 1;
@@ -39,6 +58,7 @@ int	take_fork(t_table *table, int id, int philo_id)
 }
 
 //take both forks
+//check to see who has used the last the fork
 int	take_forks(t_table *table, int id, int first, int second)
 {
 	int	fork_return;
@@ -50,7 +70,7 @@ int	take_forks(t_table *table, int id, int first, int second)
 			break ;
 		if (fork_return == 2)
 			return (1);
-		usleep(100);
+		usleep(1000);
 	}
 	while (1)
 	{
@@ -59,7 +79,7 @@ int	take_forks(t_table *table, int id, int first, int second)
 			break ;
 		if (fork_return == 2)
 			return (1);
-		usleep(100);
+		usleep(1000);
 	}
 	return (0);
 }
@@ -68,10 +88,17 @@ int	take_forks(t_table *table, int id, int first, int second)
 //check if the philo ate with the fork already
 int	assign_forks(t_table *table, int id, int philos)
 {
+	if (philos % 2 != 0)
+	{
+		if (id % 2 == 0)
+			return (take_forks(table, id, id, (id + 1) % philos));
+		else
+			return (take_forks(table, id, (id + 1) % philos, id));
+	}
 	if (id % 2 == 0)
 		return (take_forks(table, id, id, (id + 1) % philos));
 	else
-		return (take_forks(table, id, (id + 1) % philos, id));
+		return (take_forks(table, id, (id - 1 + philos) % philos, id));
 }
 
 //main fnuction, iterative philo actions and detach the starving thread
@@ -85,15 +112,15 @@ void	round_table(t_philo_context *ctx)
 			break ;
 		if (philo_eat(ctx->table, ctx->philo, ctx->config[2]) == 1)
 		{
-			drop_fork(ctx->table, ctx->philo->id);
-			drop_fork(ctx->table, (ctx->philo->id + 1) % ctx->config[0]);
+			drop_fork(ctx->table, ctx->philo->id, ctx->philo->id);
+			drop_side_fork(ctx->table, ctx->philo->id, ctx->config[0]);
 			break ;
 		}
-		drop_fork(ctx->table, ctx->philo->id);
-		drop_fork(ctx->table, (ctx->philo->id + 1) % ctx->config[0]);
+		drop_fork(ctx->table, ctx->philo->id, ctx->philo->id);
+		drop_side_fork(ctx->table, ctx->philo->id, ctx->config[0]);
 		if (philo_sleep(ctx->table, ctx->philo->id, ctx->config[3]) == 1)
 			break ;
-		usleep(100);
+		usleep(1000);
 	}
 }
 
