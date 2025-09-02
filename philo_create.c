@@ -6,12 +6,13 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 14:01:43 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/02 20:18:30 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/02 21:32:57 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
+//create the table
 t_table	*create_table(int *config, t_philosopher **philosophers)
 {
 	t_table	*table;
@@ -37,6 +38,7 @@ t_table	*create_table(int *config, t_philosopher **philosophers)
 	return (table);
 }
 
+//create a single philosopher
 t_philosopher	*create_philosopher(int counter, int *config)
 {
 	t_philosopher	*philosopher;
@@ -59,6 +61,7 @@ t_philosopher	*create_philosopher(int counter, int *config)
 	return (philosopher);
 }
 
+//create the monitor to check end condition or dead philosopher
 void	create_monitor(t_table *table, int *config)
 {
 	pthread_t			monitor;
@@ -71,6 +74,7 @@ void	create_monitor(t_table *table, int *config)
 	pthread_join(monitor, NULL);
 }
 
+//initialize a single phlosopher
 void	initialize_philosophers(int *config,
 	t_philosopher **philosophers)
 {
@@ -89,45 +93,3 @@ void	initialize_philosophers(int *config,
 	}
 }
 
-void	end_simulation(int *config,
-	t_philosopher **philosophers, t_table *table)
-{
-	int		counter;
-	int		size;
-
-	size = config[0];
-	counter = 0;
-	while (counter < size)
-	{
-		pthread_join(*(philosophers[counter]->thread), NULL);
-		counter++;
-	}
-	free(config);
-	free_philosophers(philosophers, size);
-	free_table(table, size);
-}
-
-int	start_simulation(int *config, t_philosopher **philosophers, t_table *table)
-{
-	t_philo_context		**p_ctx;
-	int					counter;
-	int					status;
-
-	p_ctx = malloc(sizeof(t_philo_context *) * config[0]);
-	counter = 0;
-	while (counter < config[0])
-	{
-		p_ctx[counter] = malloc(sizeof(t_philo_context));
-		p_ctx[counter]->philo = philosophers[counter];
-		p_ctx[counter]->table = table;
-		p_ctx[counter]->config = config;
-		p_ctx[counter]->philo->eat = get_time_in_ms();
-		pthread_create(philosophers[counter]->thread, NULL,
-			(void *)round_table, p_ctx[counter]);
-		counter++;
-	}
-	create_monitor(table, config);
-	status = table->death_flag;
-	end_simulation(config, philosophers, table);
-	return (status);
-}

@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 12:41:25 by matoledo          #+#    #+#             */
-/*   Updated: 2025/09/02 18:54:15 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/02 21:28:15 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	philo_eat(t_table *table, t_philosopher *philo, int time_to_eat)
 	{
 		if (check_death(table, philo->id, NULL) == 1)
 			return (1);
-		usleep(1000);
+		usleep(100);
 	}
 	if (--philo->own_required_eat == 0)
 	{
@@ -59,7 +59,7 @@ int	philo_sleep(t_table *table, int id, int time_to_sleep)
 	{
 		if (check_death(table, id, NULL) == 1)
 			return (1);
-		usleep(1000);
+		usleep(100);
 	}
 	return (0);
 }

@@ -6,12 +6,13 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 16:28:57 by marcos            #+#    #+#             */
-/*   Updated: 2025/08/30 17:40:13 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/02 21:34:01 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
+// free the context used on the main loop
 void	free_phi_tab_con(t_philo_context **phi_tab_con, int size)
 {
 	int	counter;
@@ -25,6 +26,7 @@ void	free_phi_tab_con(t_philo_context **phi_tab_con, int size)
 	free(phi_tab_con);
 }
 
+// free the table
 void	free_table(t_table *table, int size)
 {
 	int	counter;
@@ -42,12 +44,14 @@ void	free_table(t_table *table, int size)
 	free(table);
 }
 
+//free  single philosopher
 void	free_philosopher(t_philosopher *philo)
 {
 	free(philo->thread);
 	free(philo);
 }
 
+//free all philosophers
 void	free_philosophers(t_philosopher **philosophers, int size)
 {
 	int	counter;

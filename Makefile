@@ -6,7 +6,7 @@
 #    By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/08 11:55:33 by marcos            #+#    #+#              #
-#    Updated: 2025/08/27 12:30:48 by matoledo         ###   ########.fr        #
+#    Updated: 2025/09/02 21:35:25 by matoledo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,8 @@ SRCS = main.c \
 		free_memory.c \
 		philo_utils.c \
 		philo_actions.c \
+		forks.c \
+		monitor.c \
 
 NAME = philo
 

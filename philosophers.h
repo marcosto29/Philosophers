@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:04:45 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/02 20:14:33 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/02 21:35:10 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,10 @@ typedef struct monitor_context
 int					parse_input(int *arguments, int argc, char **argv);
 int					ft_size(int *array);
 t_table				*create_table(int *config, t_philosopher **philosophers);
+void				create_monitor(t_table *table, int *config);
+void				monitor_check(t_monitor_context *ctx);
 void				initialize_philosophers(int *config,
 						t_philosopher **philosophers);
-int					start_simulation(int *config, t_philosopher **philosophers,
-						t_table *table);
-void				round_table(t_philo_context*philo);
 void				free_philosopher(t_philosopher *philo);
 void				free_philosophers(t_philosopher **philosophers, int size);
 void				free_table(t_table *table, int size);
@@ -70,6 +69,9 @@ long				get_time_in_ms(void);
 int					check_death(t_table *table, int id, char *msg);
 void				monitor_check(t_monitor_context *ctx);
 int					philo_think(t_table *table, int id);
+int					assign_forks(t_table *table, int id, int philos);
+void				drop_fork(t_table *table, int id, int philo_id);
+void				drop_side_fork(t_table *table, int id, int philos);
 int					philo_eat(t_table *table, t_philosopher *philo,
 						int time_to_eat);
 int					philo_sleep(t_table *table, int id,
