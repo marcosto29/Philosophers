@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:04:45 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/02 21:35:10 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/04 18:52:14 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ typedef struct table
 {
 	pthread_mutex_t	*forks;
 	int				*forks_state;
-	int				*last_ate;
+	int				*last_fork_philo;
 	pthread_mutex_t	deat_flag_mutex;
 	int				death_flag;
 	pthread_mutex_t	finished_mutex;

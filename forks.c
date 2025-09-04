@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 21:10:37 by matoledo          #+#    #+#             */
-/*   Updated: 2025/09/02 21:27:18 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/04 18:52:13 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	drop_fork(t_table *table, int id, int philo_id)
 {
 	pthread_mutex_lock(&table->forks[id]);
 	table->forks_state[id] = 0;
-	table->last_ate[id] = philo_id;
+	table->last_fork_philo[id] = philo_id;
 	pthread_mutex_unlock(&table->forks[id]);
 }
 
@@ -41,7 +41,7 @@ int	take_fork(t_table *table, int id, int philo_id)
 	if (check_death(table, philo_id, NULL) == 1)
 		return (2);
 	pthread_mutex_lock(&table->forks[id]);
-	if (table->last_ate[id] == philo_id)
+	if (table->last_fork_philo[id] == philo_id)
 	{
 		pthread_mutex_unlock(&table->forks[id]);
 		return (1);
