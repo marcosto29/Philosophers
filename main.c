@@ -12,7 +12,7 @@
 
 #include "philosophers.h"
 
-//main fnuction, iterative philo actions and detach the starving thread
+//main fnuction, iterative philo actions
 void	round_table(t_philo_context *ctx)
 {
 	while (1)
