@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 14:01:43 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/06 13:56:26 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/10 17:24:13 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ t_table	*create_table(int *config, t_philosopher **philosophers)
 }
 
 //create a single philosopher
-t_philosopher	*create_philosopher(int counter, int *config)
+t_philosopher	*create_philosopher(int counter, int *config, int argc)
 {
 	t_philosopher	*philosopher;
 
@@ -53,7 +53,7 @@ t_philosopher	*create_philosopher(int counter, int *config)
 		free_philosopher(philosopher);
 		return (NULL);
 	}
-	if (ft_size(config) == 5)
+	if (argc == 6)
 		philosopher->own_required_eat = config[4];
 	else
 		philosopher->own_required_eat = -1;
@@ -77,14 +77,14 @@ void	create_monitor(t_table *table, int *config)
 
 //initialize a single phlosopher
 int	initialize_philosophers(int *config,
-	t_philosopher **philosophers)
+	t_philosopher **philosophers, int argc)
 {
 	int	counter;
 
 	counter = 0;
 	while (counter < config[0])
 	{
-		philosophers[counter] = create_philosopher(counter, config);
+		philosophers[counter] = create_philosopher(counter, config, argc);
 		if (!philosophers[counter])
 		{
 			free_philosophers(philosophers, counter);
