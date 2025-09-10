@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:02:41 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/02 21:31:32 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/06 13:55:38 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ int	start_simulation(int *config, t_philosopher **philosophers, t_table *table)
 	}
 	create_monitor(table, config);
 	status = table->death_flag;
+	free_phi_tab_con(p_ctx, config[0]);
 	end_simulation(config, philosophers, table);
 	return (status);
 }
@@ -92,8 +93,9 @@ int	main(int argc, char *argv[])
 		return (1);
 	philosophers = malloc(sizeof(t_philosopher *) * config[0]);
 	if (!philosophers)
-		exit(1);
-	initialize_philosophers(config, philosophers);
+		return (1);
+	if (initialize_philosophers(config, philosophers) == 1)
+		return (1);
 	table = create_table(config, philosophers);
 	status = start_simulation(config, philosophers, table);
 	return (status);

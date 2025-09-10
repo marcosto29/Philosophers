@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 23:30:55 by marcos            #+#    #+#             */
-/*   Updated: 2025/08/15 18:37:12 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/06 13:45:38 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int	parse_input(int *arguments, int argc, char **argv)
 	if (argc < 5 || argc > 6)
 	{
 		printf("incorrect number of arguments\n");
-		exit(1);
+		return (1);
 	}
 	counter = 0;
 	while (counter < argc - 1)

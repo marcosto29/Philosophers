@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 21:10:37 by matoledo          #+#    #+#             */
-/*   Updated: 2025/09/04 18:52:13 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/06 13:09:58 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,11 @@ int	take_forks(t_table *table, int id, int first, int second)
 	{
 		fork_return = take_fork(table, second, id);
 		if (fork_return == 0)
-			break ;
+			return (0);
 		if (fork_return == 2)
 			return (1);
 		usleep(100);
 	}
-	return (0);
 }
 
 //layer to filter odds and even and have a rule to make deadlocks rarer

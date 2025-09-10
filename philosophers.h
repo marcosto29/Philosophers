@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:04:45 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/04 18:52:14 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/06 13:52:41 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int					ft_size(int *array);
 t_table				*create_table(int *config, t_philosopher **philosophers);
 void				create_monitor(t_table *table, int *config);
 void				monitor_check(t_monitor_context *ctx);
-void				initialize_philosophers(int *config,
+int					initialize_philosophers(int *config,
 						t_philosopher **philosophers);
 void				free_philosopher(t_philosopher *philo);
 void				free_philosophers(t_philosopher **philosophers, int size);

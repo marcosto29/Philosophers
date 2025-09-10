@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 16:28:57 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/02 21:34:01 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/06 13:51:22 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	free_table(t_table *table, int size)
 	}
 	free(table->forks);
 	free(table->forks_state);
+	free(table->last_fork_philo);
 	pthread_mutex_destroy(&table->deat_flag_mutex);
 	pthread_mutex_destroy(&table->finished_mutex);
 	free(table);

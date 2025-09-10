@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 14:01:43 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/04 18:52:31 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/06 13:56:26 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,11 @@ void	create_monitor(t_table *table, int *config)
 	m_ctx->config = config;
 	pthread_create(&monitor, NULL, (void *)monitor_check, m_ctx);
 	pthread_join(monitor, NULL);
+	free(m_ctx);
 }
 
 //initialize a single phlosopher
-void	initialize_philosophers(int *config,
+int	initialize_philosophers(int *config,
 	t_philosopher **philosophers)
 {
 	int	counter;
@@ -87,8 +88,9 @@ void	initialize_philosophers(int *config,
 		if (!philosophers[counter])
 		{
 			free_philosophers(philosophers, counter);
-			exit(1);
+			return (1);
 		}
 		counter++;
 	}
+	return (0);
 }
