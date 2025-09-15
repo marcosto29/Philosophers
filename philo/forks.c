@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 21:10:37 by matoledo          #+#    #+#             */
-/*   Updated: 2025/09/06 13:09:58 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/15 23:17:44 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,15 +88,8 @@ int	take_forks(t_table *table, int id, int first, int second)
 //check if the philo ate with the fork already
 int	assign_forks(t_table *table, int id, int philos)
 {
-	if (philos % 2 != 0)
-	{
-		if (id % 2 == 0)
-			return (take_forks(table, id, id, (id + 1) % philos));
-		else
-			return (take_forks(table, id, (id + 1) % philos, id));
-	}
 	if (id % 2 == 0)
 		return (take_forks(table, id, id, (id + 1) % philos));
 	else
-		return (take_forks(table, id, (id - 1 + philos) % philos, id));
+		return (take_forks(table, id, (id + 1) % philos, id));
 }

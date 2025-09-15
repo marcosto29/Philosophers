@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 12:41:25 by matoledo          #+#    #+#             */
-/*   Updated: 2025/09/10 17:00:34 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/15 23:29:49 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,13 @@ int	philo_sleep(t_table *table, int id, int time_to_sleep)
 //function to kill the philo
 void	philo_die(t_table *table, int id)
 {
-	pthread_mutex_lock(&table->deat_flag_mutex);
+	pthread_mutex_lock(&table->death_flag_mutex);
 	if (table->death_flag == 1)
 	{
-		pthread_mutex_unlock(&table->deat_flag_mutex);
+		pthread_mutex_unlock(&table->death_flag_mutex);
 		return ;
 	}
 	table->death_flag = 1;
 	show_event(get_time_in_ms(), id, "died");
-	pthread_mutex_unlock(&table->deat_flag_mutex);
+	pthread_mutex_unlock(&table->death_flag_mutex);
 }

@@ -6,7 +6,7 @@
 /*   By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 12:02:41 by marcos            #+#    #+#             */
-/*   Updated: 2025/09/10 17:23:35 by matoledo         ###   ########.fr       */
+/*   Updated: 2025/09/15 23:22:00 by matoledo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 //main fnuction, iterative philo actions
 void	round_table(t_philo_context *ctx)
 {
+	if (ctx->philo->id % 2 != 0)
+		usleep(500);
 	while (1)
 	{
 		if (philo_think(ctx->table, ctx->philo->id) == 1)

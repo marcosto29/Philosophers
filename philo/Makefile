@@ -6,7 +6,7 @@
 #    By: matoledo <matoledo@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/08 11:55:33 by marcos            #+#    #+#              #
-#    Updated: 2025/09/02 21:35:25 by matoledo         ###   ########.fr        #
+#    Updated: 2025/09/15 23:20:18 by matoledo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,3 +38,5 @@ clean:
 	
 fclean:
 	rm -rf $(OBJS) $(NAME)
+
+re: fclean $(NAME)
